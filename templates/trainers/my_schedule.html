@@ -1,0 +1,56 @@
+{% extends 'base.html' %}
+
+{% block title %}Мое расписание{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Мое расписание</h1>
+    <p class="text-muted mb-0">
+        Занятия текущего тренера
+    </p>
+</div>
+
+{% if trainer %}
+    <div class="card shadow-sm">
+        <div class="card-header bg-white">
+            <h2 class="h5 mb-0">{{ trainer.full_name }}</h2>
+        </div>
+
+        <div class="card-body">
+            {% if trainer_classes %}
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle">
+                        <thead>
+                            <tr>
+                                <th>Занятие</th>
+                                <th>Дата</th>
+                                <th>Время</th>
+                                <th>Статус</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for class_item in trainer_classes %}
+                                <tr>
+                                    <td>{{ class_item.title }}</td>
+                                    <td>{{ class_item.class_date }}</td>
+                                    <td>{{ class_item.start_time }} — {{ class_item.end_time }}</td>
+                                    <td>{{ class_item.get_status_display }}</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">
+                    Расписание будет доступно после реализации модуля занятий.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+{% else %}
+    <div class="alert alert-warning">
+        Для вашей учетной записи не найден профиль тренера.
+        Обратитесь к администратору.
+    </div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Убрать клиента{% endblock %}
+
+{% block content %}
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h1 class="h4 mb-0">Убрать клиента от тренера</h1>
+    </div>
+
+    <div class="card-body">
+        <p>
+            Вы действительно хотите убрать клиента
+            <strong>{{ assignment.client.full_name }}</strong>
+            от тренера
+            <strong>{{ trainer.full_name }}</strong>?
+        </p>
+
+        <form method="post">
+            {% csrf_token %}
+
+            <button type="submit" class="btn btn-danger">
+                Убрать
+            </button>
+
+            {% if request.resolver_match.url_name == 'my_clients_remove' %}
+                <a href="{% url 'trainers:my_clients' %}" class="btn btn-outline-secondary">
+                    Отмена
+                </a>
+            {% else %}
+                <a href="{% url 'trainers:clients' trainer.pk %}" class="btn btn-outline-secondary">
+                    Отмена
+                </a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,95 @@
+{% extends 'base.html' %}
+
+{% block title %}Абонемент клиента{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Абонемент клиента</h1>
+        <p class="text-muted mb-0">
+            {{ membership.client.full_name }}
+        </p>
+    </div>
+
+    <div class="d-flex gap-2">
+        <a href="{% url 'clients:detail' membership.client.pk %}" class="btn btn-outline-secondary">
+            К клиенту
+        </a>
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-8">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Информация об абонементе</h2>
+            </div>
+
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-4">Клиент</dt>
+                    <dd class="col-sm-8">{{ membership.client.full_name }}</dd>
+
+                    <dt class="col-sm-4">Тип абонемента</dt>
+                    <dd class="col-sm-8">{{ membership.membership_type.name }}</dd>
+
+                    <dt class="col-sm-4">Дата начала</dt>
+                    <dd class="col-sm-8">{{ membership.start_date }}</dd>
+
+                    <dt class="col-sm-4">Дата окончания</dt>
+                    <dd class="col-sm-8">{{ membership.end_date }}</dd>
+
+                    <dt class="col-sm-4">Остаток посещений</dt>
+                    <dd class="col-sm-8">{{ membership.remaining_visits }}</dd>
+
+                    <dt class="col-sm-4">Статус</dt>
+                    <dd class="col-sm-8">
+                        <span class="badge bg-secondary">
+                            {{ membership.get_status_display }}
+                        </span>
+                    </dd>
+
+                    <dt class="col-sm-4">Дата создания</dt>
+                    <dd class="col-sm-8">{{ membership.created_at }}</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    {% if is_admin_user %}
+        <div class="col-lg-4">
+            <div class="card shadow-sm">
+                <div class="card-header bg-white">
+                    <h2 class="h5 mb-0">Действия</h2>
+                </div>
+
+                <div class="card-body d-grid gap-2">
+                    {% if membership.status == 'active' %}
+                        <form method="post" action="{% url 'memberships:client_membership_freeze' membership.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-warning w-100">
+                                Заморозить
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    {% if membership.status == 'frozen' %}
+                        <form method="post" action="{% url 'memberships:client_membership_activate' membership.pk %}">
+                            {% csrf_token %}
+                            <button type="submit" class="btn btn-outline-success w-100">
+                                Активировать
+                            </button>
+                        </form>
+                    {% endif %}
+
+                    {% if membership.status != 'cancelled' %}
+                        <a href="{% url 'memberships:client_membership_cancel' membership.pk %}" class="btn btn-outline-danger">
+                            Отменить абонемент
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

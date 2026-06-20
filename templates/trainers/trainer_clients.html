@@ -1,0 +1,79 @@
+{% extends 'base.html' %}
+
+{% block title %}Клиенты тренера{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Клиенты тренера</h1>
+        <p class="text-muted mb-0">{{ trainer.full_name }}</p>
+    </div>
+
+    <div class="d-flex gap-2">
+        {% if is_own_trainer_page %}
+            <a href="{% url 'trainers:my_clients_add' %}" class="btn btn-primary">
+                Добавить клиента
+            </a>
+        {% else %}
+            <a href="{% url 'trainers:clients_add' trainer.pk %}" class="btn btn-primary">
+                Добавить клиента
+            </a>
+        {% endif %}
+
+        <a href="{% url 'trainers:detail' trainer.pk %}" class="btn btn-outline-secondary">
+            Назад
+        </a>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if assignments %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>ФИО клиента</th>
+                            <th>Телефон</th>
+                            <th>Email</th>
+                            <th>Статус</th>
+                            <th>Дата закрепления</th>
+                            <th class="text-end">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                            <tr>
+                                <td>{{ assignment.client.full_name }}</td>
+                                <td>{{ assignment.client.phone }}</td>
+                                <td>{{ assignment.client.email|default:"—" }}</td>
+                                <td>{{ assignment.client.get_status_display }}</td>
+                                <td>{{ assignment.assigned_at|date:'d.m.Y H:i' }}</td>
+                                <td class="text-end">
+                                    <a href="{% url 'clients:detail' assignment.client.pk %}" class="btn btn-sm btn-outline-primary">
+                                        Подробнее
+                                    </a>
+
+                                    {% if is_own_trainer_page %}
+                                        <a href="{% url 'trainers:my_clients_remove' assignment.pk %}" class="btn btn-sm btn-outline-danger">
+                                            Убрать
+                                        </a>
+                                    {% else %}
+                                        <a href="{% url 'trainers:clients_remove' trainer.pk assignment.pk %}" class="btn btn-sm btn-outline-danger">
+                                            Убрать
+                                        </a>
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">
+                За тренером пока не закреплены клиенты.
+            </p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

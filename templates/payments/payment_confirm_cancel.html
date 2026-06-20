@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Отмена оплаты{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h1 class="h4 mb-0">Отмена оплаты</h1>
+            </div>
+
+            <div class="card-body">
+                <p>
+                    Вы действительно хотите отменить оплату клиента
+                    <strong>{{ payment.client.full_name }}</strong>?
+                </p>
+
+                <dl class="row">
+                    <dt class="col-sm-4">Дата оплаты</dt>
+                    <dd class="col-sm-8">{{ payment.payment_date|date:'d.m.Y' }}</dd>
+
+                    <dt class="col-sm-4">Сумма</dt>
+                    <dd class="col-sm-8">{{ payment.amount }} ₽</dd>
+
+                    <dt class="col-sm-4">Способ оплаты</dt>
+                    <dd class="col-sm-8">{{ payment.get_payment_method_display }}</dd>
+
+                    <dt class="col-sm-4">Статус</dt>
+                    <dd class="col-sm-8">{{ payment.get_status_display }}</dd>
+
+                    <dt class="col-sm-4">Абонемент</dt>
+                    <dd class="col-sm-8">
+                        {% if payment.membership %}
+                            {{ payment.membership.membership_type.name }}
+                        {% else %}
+                            —
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-4">Комментарий</dt>
+                    <dd class="col-sm-8">{{ payment.comment|default:'—' }}</dd>
+                </dl>
+
+                <div class="alert alert-warning">
+                    Оплата не будет удалена физически.
+                    Ее статус изменится на <strong>«Отменена»</strong>.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'payments:list' %}" class="btn btn-outline-secondary">
+                            Назад
+                        </a>
+
+                        <button type="submit" class="btn btn-danger">
+                            Отменить оплату
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,86 @@
+{% extends 'base.html' %}
+
+{% block title %}Профиль пользователя{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h1 class="h4 mb-0">Профиль пользователя</h1>
+            </div>
+
+            <div class="card-body">
+                <table class="table table-bordered mb-0">
+                    <tbody>
+                        <tr>
+                            <th class="w-25">Логин</th>
+                            <td>{{ request.user.username }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Имя</th>
+                            <td>
+                                {% if request.user.first_name %}
+                                    {{ request.user.first_name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Фамилия</th>
+                            <td>
+                                {% if request.user.last_name %}
+                                    {{ request.user.last_name }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Email</th>
+                            <td>
+                                {% if request.user.email %}
+                                    {{ request.user.email }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Роль</th>
+                            <td>{{ profile.get_role_display }}</td>
+                        </tr>
+
+                        <tr>
+                            <th>Телефон</th>
+                            <td>
+                                {% if profile.phone %}
+                                    {{ profile.phone }}
+                                {% else %}
+                                    —
+                                {% endif %}
+                            </td>
+                        </tr>
+
+                        <tr>
+                            <th>Дата создания профиля</th>
+                            <td>{{ profile.created_at|date:"d.m.Y H:i" }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="card-footer bg-white">
+                <a href="{% url 'dashboard' %}" class="btn btn-secondary">
+                    Назад
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,96 @@
+{% extends 'base.html' %}
+
+{% block title %}Типы абонементов{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Типы абонементов</h1>
+        <p class="text-muted mb-0">Справочник абонементов фитнес-клуба</p>
+    </div>
+
+    {% if is_admin_user %}
+        <a href="{% url 'memberships:type_create' %}" class="btn btn-primary">
+            Добавить
+        </a>
+    {% endif %}
+</div>
+
+<div class="card shadow-sm mb-4">
+    <div class="card-body">
+        <form method="get" class="row g-3">
+            <div class="col-md-4">
+                <label for="is_active" class="form-label">Активность</label>
+                <select name="is_active" id="is_active" class="form-select">
+                    <option value="" {% if current_is_active == '' %}selected{% endif %}>Все</option>
+                    <option value="1" {% if current_is_active == '1' %}selected{% endif %}>Активные</option>
+                    <option value="0" {% if current_is_active == '0' %}selected{% endif %}>Неактивные</option>
+                </select>
+            </div>
+
+            <div class="col-md-2 d-flex align-items-end">
+                <button type="submit" class="btn btn-outline-primary w-100">
+                    Применить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if membership_types %}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead>
+                        <tr>
+                            <th>Название</th>
+                            <th>Длительность</th>
+                            <th>Посещения</th>
+                            <th>Стоимость</th>
+                            <th>Активность</th>
+                            <th class="text-end">Действия</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membership_type in membership_types %}
+                            <tr>
+                                <td>{{ membership_type.name }}</td>
+                                <td>{{ membership_type.duration_days }} дней</td>
+                                <td>{{ membership_type.visit_limit }}</td>
+                                <td>{{ membership_type.price }} ₽</td>
+                                <td>
+                                    {% if membership_type.is_active %}
+                                        <span class="badge bg-success">Активен</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">Неактивен</span>
+                                    {% endif %}
+                                </td>
+                                <td class="text-end">
+                                    {% if is_admin_user %}
+                                        <a href="{% url 'memberships:type_edit' membership_type.pk %}" class="btn btn-sm btn-outline-primary">
+                                            Редактировать
+                                        </a>
+
+                                        <a href="{% url 'memberships:type_delete' membership_type.pk %}" class="btn btn-sm btn-outline-danger">
+                                            Удалить
+                                        </a>
+                                    {% else %}
+                                        —
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% include 'pagination.html' %}
+        {% else %}
+            <div class="alert alert-info mb-0">
+                Типы абонементов не найдены.
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

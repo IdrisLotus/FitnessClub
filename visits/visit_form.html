@@ -1,0 +1,47 @@
+{% extends 'base.html' %}
+
+{% block title %}Отметить посещение{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Отметить посещение</h1>
+    <p class="text-muted mb-0">Клиент: {{ client.full_name }}</p>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label for="{{ form.comment.id_for_label }}" class="form-label">
+                    Комментарий
+                </label>
+                {{ form.comment }}
+
+                {% for error in form.comment.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Отметить посещение
+                </button>
+
+                <a href="{% url 'clients:detail' client.pk %}" class="btn btn-outline-secondary">
+                    Отмена
+                </a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

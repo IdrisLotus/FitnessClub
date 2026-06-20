@@ -1,0 +1,97 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить оплату{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Добавить оплату</h1>
+        <p class="text-muted mb-0">
+            Клиент: <strong>{{ client.full_name }}</strong>
+        </p>
+    </div>
+
+    <a href="{% url 'clients:detail' client.pk %}" class="btn btn-outline-secondary">
+        Отмена
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% include 'includes/form_errors.html' %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="{{ form.membership.id_for_label }}" class="form-label">
+                        Абонемент
+                    </label>
+                    {{ form.membership }}
+                    {% for error in form.membership.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                    <div class="form-text">
+                        Можно оставить без привязки к абонементу.
+                    </div>
+                </div>
+
+                <div class="col-md-6">
+                    <label for="{{ form.amount.id_for_label }}" class="form-label">
+                        Сумма <span class="text-danger">*</span>
+                    </label>
+                    {{ form.amount }}
+                    {% for error in form.amount.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="{{ form.payment_date.id_for_label }}" class="form-label">
+                        Дата оплаты <span class="text-danger">*</span>
+                    </label>
+                    {{ form.payment_date }}
+                    {% for error in form.payment_date.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-6">
+                    <label for="{{ form.payment_method.id_for_label }}" class="form-label">
+                        Способ оплаты <span class="text-danger">*</span>
+                    </label>
+                    {{ form.payment_method }}
+                    {% for error in form.payment_method.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12">
+                    <label for="{{ form.comment.id_for_label }}" class="form-label">
+                        Комментарий
+                    </label>
+                    {{ form.comment }}
+                    {% for error in form.comment.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="alert alert-info mt-4">
+                Оплата фиксируется вручную. Онлайн-оплата и банковские интеграции не используются.
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a href="{% url 'clients:detail' client.pk %}" class="btn btn-outline-secondary">
+                    Отмена
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Сохранить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

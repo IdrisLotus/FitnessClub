@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчет по тренерам{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Отчет по тренерам</h1>
+    <p class="text-muted mb-0">Статистика по занятиям тренеров</p>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h2 class="h5 mb-0">Тренеры</h2>
+    </div>
+
+    <div class="card-body">
+        {% if trainers %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Тренер</th>
+                            <th>Специализация</th>
+                            <th>Всего занятий</th>
+                            <th>Проведено</th>
+                            <th>Отменено</th>
+                            <th>Клиентов записано</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for trainer in trainers %}
+                            <tr>
+                                <td>{{ trainer.full_name }}</td>
+                                <td>{{ trainer.specialization }}</td>
+                                <td>{{ trainer.classes_count }}</td>
+                                <td>{{ trainer.completed_classes_count }}</td>
+                                <td>{{ trainer.cancelled_classes_count }}</td>
+                                <td>{{ trainer.registered_clients_count }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">Тренеры не найдены.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

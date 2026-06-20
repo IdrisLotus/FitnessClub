@@ -1,0 +1,289 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ client.full_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">{{ client.full_name }}</h1>
+        <p class="text-muted mb-0">Карточка клиента</p>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'clients:list' %}" class="btn btn-outline-secondary">
+            Назад
+        </a>
+
+        {% if user.is_superuser or user.profile.role == 'admin' %}
+            <a href="{% url 'clients:visit_create' client.pk %}" class="btn btn-outline-success">
+                Отметить посещение
+            </a>
+
+            <a href="{% url 'clients:membership_create' client.pk %}" class="btn btn-primary">
+                Назначить абонемент
+            </a>
+
+            <a href="{% url 'clients:payment_create' client.pk %}" class="btn btn-outline-success">
+                Добавить оплату
+            </a>
+
+            {% if current_membership %}
+                <a href="{% url 'memberships:client_membership_detail' current_membership.pk %}" class="btn btn-outline-secondary">
+                    Текущий абонемент
+                </a>
+            {% endif %}
+
+            <a href="{% url 'clients:edit' client.pk %}" class="btn btn-outline-primary">
+                Редактировать
+            </a>
+
+            <a href="{% url 'clients:delete' client.pk %}" class="btn btn-outline-danger">
+                Удалить
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Основная информация</h2>
+            </div>
+
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">ФИО</dt>
+                    <dd class="col-sm-7">{{ client.full_name }}</dd>
+
+                    <dt class="col-sm-5">Телефон</dt>
+                    <dd class="col-sm-7">{{ client.phone }}</dd>
+
+                    <dt class="col-sm-5">Email</dt>
+                    <dd class="col-sm-7">
+                        {% if client.email %}
+                            {{ client.email }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-5">Пол</dt>
+                    <dd class="col-sm-7">
+                        {% if client.gender %}
+                            {{ client.get_gender_display }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-5">Дата рождения</dt>
+                    <dd class="col-sm-7">
+                        {% if client.birth_date %}
+                            {{ client.birth_date|date:'d.m.Y' }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-5">Статус</dt>
+                    <dd class="col-sm-7">{{ client.get_status_display }}</dd>
+
+                    <dt class="col-sm-5">Дата регистрации</dt>
+                    <dd class="col-sm-7">{{ client.registration_date|date:'d.m.Y' }}</dd>
+
+                    <dt class="col-sm-5">Комментарий</dt>
+                    <dd class="col-sm-7">
+                        {% if client.note %}
+                            {{ client.note|linebreaksbr }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Текущий абонемент</h2>
+
+                <div class="d-flex gap-2">
+                    {% if user.is_superuser or user.profile.role == 'admin' %}
+                        <a href="{% url 'clients:membership_create' client.pk %}" class="btn btn-sm btn-primary">
+                            Назначить
+                        </a>
+                    {% endif %}
+
+                    {% if current_membership %}
+                        <a href="{% url 'memberships:client_membership_detail' current_membership.pk %}" class="btn btn-sm btn-outline-secondary">
+                            Подробнее
+                        </a>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="card-body">
+                {% if current_membership %}
+                    <table class="table table-bordered mb-0">
+                        <tr>
+                            <th style="width: 220px;">Тип абонемента</th>
+                            <td>{{ current_membership.membership_type.name }}</td>
+                        </tr>
+                        <tr>
+                            <th>Дата начала</th>
+                            <td>{{ current_membership.start_date|date:'d.m.Y' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Дата окончания</th>
+                            <td>{{ current_membership.end_date|date:'d.m.Y' }}</td>
+                        </tr>
+                        <tr>
+                            <th>Остаток посещений</th>
+                            <td>{{ current_membership.remaining_visits }}</td>
+                        </tr>
+                        <tr>
+                            <th>Статус</th>
+                            <td>{{ current_membership.get_status_display }}</td>
+                        </tr>
+                    </table>
+                {% else %}
+                    <p class="text-muted mb-0">
+                        У клиента нет активного абонемента.
+                    </p>
+                {% endif %}
+            </div>
+        </div>
+
+    <div class="card shadow-sm mb-4">
+        <div class="card-header bg-white">
+            <h2 class="h5 mb-0">Закрепленные тренеры</h2>
+        </div>
+
+        <div class="card-body">
+            {% if trainer_assignments %}
+                <div class="table-responsive">
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Тренер</th>
+                                <th>Специализация</th>
+                                <th>Телефон</th>
+                                <th>Дата закрепления</th>
+                                <th class="text-end">Действия</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for assignment in trainer_assignments %}
+                                <tr>
+                                    <td>{{ assignment.trainer.full_name }}</td>
+                                    <td>{{ assignment.trainer.specialization }}</td>
+                                    <td>{{ assignment.trainer.phone|default:"—" }}</td>
+                                    <td>{{ assignment.assigned_at|date:'d.m.Y H:i' }}</td>
+                                    <td class="text-end">
+                                        <a href="{% url 'trainers:detail' assignment.trainer.pk %}" class="btn btn-sm btn-outline-primary">
+                                            Открыть тренера
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            {% else %}
+                <p class="text-muted mb-0">
+                    Клиент пока не закреплен за тренером.
+                </p>
+            {% endif %}
+        </div>
+    </div>
+    
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Системная информация</h2>
+            </div>
+
+            <div class="card-body">
+                <p class="mb-1">
+                    <strong>Создан:</strong> {{ client.created_at|date:'d.m.Y H:i' }}
+                </p>
+                <p class="mb-0">
+                    <strong>Обновлен:</strong> {{ client.updated_at|date:'d.m.Y H:i' }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Последние посещения</h2>
+            </div>
+
+            <div class="card-body">
+                {% if latest_visits %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for visit in latest_visits %}
+                                    <tr>
+                                        <td>{{ visit.visit_datetime|date:'d.m.Y H:i' }}</td>
+                                        <td>{{ visit.get_status_display }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Посещений пока нет.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Последние оплаты</h2>
+            </div>
+
+            <div class="card-body">
+                {% if latest_payments %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Сумма</th>
+                                    <th>Статус</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in latest_payments %}
+                                    <tr>
+                                        <td>{{ payment.payment_date|date:'d.m.Y' }}</td>
+                                        <td>{{ payment.amount }} ₽</td>
+                                        <td>{{ payment.get_status_display }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Оплат пока нет.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

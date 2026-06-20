@@ -1,0 +1,135 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчет по оплатам{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Отчет по оплатам</h1>
+    <p class="text-muted mb-0">Финансовая статистика по проведенным оплатам</p>
+</div>
+
+<form method="get" class="card card-body shadow-sm mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+            <label class="form-label">Дата с</label>
+            <input type="date" name="date_from" value="{{ date_from }}" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Дата по</label>
+            <input type="date" name="date_to" value="{{ date_to }}" class="form-control">
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Клиент</label>
+            <select name="client" class="form-select">
+                <option value="">Все клиенты</option>
+                {% for client in clients %}
+                    <option value="{{ client.id }}" {% if selected_client == client.id|stringformat:"s" %}selected{% endif %}>
+                        {{ client.full_name }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-primary">Применить</button>
+            <a href="{% url 'payments_report' %}" class="btn btn-outline-secondary">Сбросить</a>
+        </div>
+    </div>
+</form>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Сумма оплат за выбранный период</div>
+                <div class="fs-3 fw-semibold">{{ total_amount }} ₽</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted">Доход за текущий месяц</div>
+                <div class="fs-3 fw-semibold">{{ monthly_income }} ₽</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Оплаты по способам оплаты</h2>
+            </div>
+
+            <div class="card-body">
+                {% if payments_by_method %}
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Способ</th>
+                                    <th>Количество</th>
+                                    <th>Сумма</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in payments_by_method %}
+                                    <tr>
+                                        <td>{{ item.payment_method }}</td>
+                                        <td>{{ item.count }}</td>
+                                        <td>{{ item.total }} ₽</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Данных нет.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Последние оплаты</h2>
+            </div>
+
+            <div class="card-body">
+                {% if payments %}
+                    <div class="table-responsive">
+                        <table class="table table-striped align-middle">
+                            <thead>
+                                <tr>
+                                    <th>Дата</th>
+                                    <th>Клиент</th>
+                                    <th>Сумма</th>
+                                    <th>Способ</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for payment in payments %}
+                                    <tr>
+                                        <td>{{ payment.payment_date|date:"d.m.Y" }}</td>
+                                        <td>{{ payment.client.full_name }}</td>
+                                        <td>{{ payment.amount }} ₽</td>
+                                        <td>{{ payment.get_payment_method_display }}</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Оплаты не найдены.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчеты{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Отчеты</h1>
+    <p class="text-muted mb-0">Раздел статистики и отчетов фитнес-клуба</p>
+</div>
+
+{% if role == 'trainer' %}
+    <div class="alert alert-warning">
+        Тренеру недоступны общие отчеты и финансовая статистика.
+    </div>
+{% else %}
+    <div class="row g-3">
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'clients_report' %}" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">Клиенты</h2>
+                        <p class="text-muted mb-0">Статистика по клиентской базе.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'memberships_report' %}" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">Абонементы</h2>
+                        <p class="text-muted mb-0">Активные, истекшие и завершенные абонементы.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'visits_report' %}" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">Посещения</h2>
+                        <p class="text-muted mb-0">Посещения за период и по дням.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'payments_report' %}" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">Оплаты</h2>
+                        <p class="text-muted mb-0">Доходы, способы оплаты и суммы за период.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+
+        <div class="col-md-6 col-lg-4">
+            <a href="{% url 'trainers_report' %}" class="text-decoration-none">
+                <div class="card shadow-sm h-100">
+                    <div class="card-body">
+                        <h2 class="h5">Тренеры</h2>
+                        <p class="text-muted mb-0">Занятия, проведенные тренерами.</p>
+                    </div>
+                </div>
+            </a>
+        </div>
+    </div>
+{% endif %}
+{% endblock %}

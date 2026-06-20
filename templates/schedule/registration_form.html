@@ -1,0 +1,53 @@
+{% extends 'base.html' %}
+
+{% block title %}Запись клиента на занятие{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Запись клиента на занятие</h1>
+        <p class="text-muted mb-0">
+            {{ fitness_class.title }} — {{ fitness_class.class_date|date:'d.m.Y' }}
+        </p>
+    </div>
+
+    <a href="{% url 'schedule:detail' fitness_class.pk %}" class="btn btn-outline-secondary">
+        Отмена
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% include 'includes/form_errors.html' %}
+
+        <div class="alert alert-info">
+            Свободных мест: <strong>{{ available_places }}</strong>
+        </div>
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.client.id_for_label }}" class="form-label">
+                    Клиент <span class="text-danger">*</span>
+                </label>
+                {{ form.client }}
+
+                {% for error in form.client.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'schedule:detail' fitness_class.pk %}" class="btn btn-outline-secondary">
+                    Отмена
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Записать клиента
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

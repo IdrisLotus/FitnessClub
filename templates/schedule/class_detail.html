@@ -1,0 +1,159 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ fitness_class.title }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">{{ fitness_class.title }}</h1>
+        <p class="text-muted mb-0">Карточка занятия</p>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'schedule:list' %}" class="btn btn-outline-secondary">
+            Назад
+        </a>
+
+        {% if can_register_clients %}
+            <a href="{% url 'schedule:register' fitness_class.pk %}" class="btn btn-primary">
+                Записать клиента
+            </a>
+        {% endif %}
+
+        {% if can_manage_class %}
+            <a href="{% url 'schedule:edit' fitness_class.pk %}" class="btn btn-outline-primary">
+                Редактировать
+            </a>
+
+            {% if fitness_class.status == 'planned' %}
+                <form method="post" action="{% url 'schedule:complete' fitness_class.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-success">
+                        Отметить проведенным
+                    </button>
+                </form>
+
+                <form method="post" action="{% url 'schedule:cancel' fitness_class.pk %}">
+                    {% csrf_token %}
+                    <button type="submit" class="btn btn-outline-danger">
+                        Отменить занятие
+                    </button>
+                </form>
+            {% endif %}
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-5">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Информация о занятии</h2>
+            </div>
+
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">Тренер</dt>
+                    <dd class="col-sm-7">{{ fitness_class.trainer.full_name }}</dd>
+
+                    <dt class="col-sm-5">Дата</dt>
+                    <dd class="col-sm-7">{{ fitness_class.class_date|date:'d.m.Y' }}</dd>
+
+                    <dt class="col-sm-5">Время</dt>
+                    <dd class="col-sm-7">
+                        {{ fitness_class.start_time|time:'H:i' }}–{{ fitness_class.end_time|time:'H:i' }}
+                    </dd>
+
+                    <dt class="col-sm-5">Вместимость</dt>
+                    <dd class="col-sm-7">{{ fitness_class.capacity }}</dd>
+
+                    <dt class="col-sm-5">Свободных мест</dt>
+                    <dd class="col-sm-7">{{ available_places }}</dd>
+
+                    <dt class="col-sm-5">Статус</dt>
+                    <dd class="col-sm-7">{{ fitness_class.get_status_display }}</dd>
+
+                    <dt class="col-sm-5">Описание</dt>
+                    <dd class="col-sm-7">
+                        {% if fitness_class.description %}
+                            {{ fitness_class.description|linebreaksbr }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-7">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Участники занятия</h2>
+
+                {% if can_register_clients %}
+                    <a href="{% url 'schedule:register' fitness_class.pk %}" class="btn btn-sm btn-primary">
+                        Записать клиента
+                    </a>
+                {% endif %}
+            </div>
+
+            <div class="card-body">
+                {% if registrations %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Клиент</th>
+                                    <th>Статус</th>
+                                    <th class="text-end">Действия</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                {% for registration in registrations %}
+                                    <tr>
+                                        <td>
+                                            <a href="{% url 'clients:detail' registration.client.pk %}" class="text-decoration-none fw-semibold">
+                                                {{ registration.client.full_name }}
+                                            </a>
+                                        </td>
+
+                                        <td>{{ registration.get_status_display }}</td>
+
+                                        <td class="text-end">
+                                            {% if can_manage_class %}
+                                                {% if registration.status != 'cancelled' %}
+                                                    <form method="post" action="{% url 'schedule:registration_visited' registration.pk %}" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-sm btn-outline-success">
+                                                            Посетил
+                                                        </button>
+                                                    </form>
+
+                                                    <form method="post" action="{% url 'schedule:registration_missed' registration.pk %}" class="d-inline">
+                                                        {% csrf_token %}
+                                                        <button type="submit" class="btn btn-sm btn-outline-warning">
+                                                            Не пришел
+                                                        </button>
+                                                    </form>
+
+                                                    <a href="{% url 'schedule:registration_cancel' registration.pk %}" class="btn btn-sm btn-outline-danger">
+                                                        Отменить
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">На занятие пока никто не записан.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

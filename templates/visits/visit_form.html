@@ -1,0 +1,54 @@
+{% extends 'base.html' %}
+
+{% block title %}Отметить посещение{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Отметить посещение</h1>
+        <p class="text-muted mb-0">
+            Клиент: <strong>{{ client.full_name }}</strong>
+        </p>
+    </div>
+
+    <a href="{% url 'clients:detail' client.pk %}" class="btn btn-outline-secondary">
+        Отмена
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% include 'includes/form_errors.html' %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="mb-3">
+                <label for="{{ form.comment.id_for_label }}" class="form-label">
+                    Комментарий
+                </label>
+                {{ form.comment }}
+
+                {% for error in form.comment.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="alert alert-info">
+                При сохранении система проверит активный абонемент клиента
+                и автоматически спишет одно посещение.
+            </div>
+
+            <div class="d-flex justify-content-end gap-2">
+                <a href="{% url 'clients:detail' client.pk %}" class="btn btn-outline-secondary">
+                    Отмена
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Отметить посещение
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

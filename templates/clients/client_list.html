@@ -1,0 +1,105 @@
+{% extends 'base.html' %}
+
+{% block title %}Клиенты{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">Клиенты</h1>
+        <p class="text-muted mb-0">Список клиентов фитнес-клуба</p>
+    </div>
+
+    {% if user.is_superuser or user.profile.role == 'admin' %}
+        <a href="{% url 'clients:create' %}" class="btn btn-primary">
+            Добавить клиента
+        </a>
+    {% endif %}
+</div>
+
+<form method="get" class="card card-body shadow-sm mb-4">
+    <div class="row g-3 align-items-end">
+        <div class="col-md-6">
+            <label class="form-label">Поиск</label>
+            <input
+                type="text"
+                name="q"
+                value="{{ query }}"
+                class="form-control"
+                placeholder="ФИО, телефон или email"
+            >
+        </div>
+
+        <div class="col-md-3">
+            <label class="form-label">Статус</label>
+            <select name="status" class="form-select">
+                <option value="">Все статусы</option>
+                {% for value, label in status_choices %}
+                    <option value="{{ value }}" {% if selected_status == value %}selected{% endif %}>
+                        {{ label }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="col-md-3">
+            <button type="submit" class="btn btn-outline-primary">
+                Найти
+            </button>
+
+            <a href="{% url 'clients:list' %}" class="btn btn-outline-secondary">
+                Сбросить
+            </a>
+        </div>
+    </div>
+</form>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% if clients %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>ФИО</th>
+                            <th>Телефон</th>
+                            <th>Email</th>
+                            <th>Статус</th>
+                            <th>Дата регистрации</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        {% for client in clients %}
+                            <tr>
+                                <td>
+                                    <a href="{% url 'clients:detail' client.pk %}" class="fw-semibold text-decoration-none">
+                                        {{ client.full_name }}
+                                    </a>
+                                </td>
+
+                                <td>{{ client.phone }}</td>
+
+                                <td>
+                                    {% if client.email %}
+                                        {{ client.email }}
+                                    {% else %}
+                                        <span class="text-muted">—</span>
+                                    {% endif %}
+                                </td>
+
+                                <td>{{ client.get_status_display }}</td>
+
+                                <td>{{ client.registration_date|date:"d.m.Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            {% include 'pagination.html' %}
+        {% else %}
+            <p class="text-muted mb-0">Клиенты не найдены.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

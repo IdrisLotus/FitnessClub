@@ -1,0 +1,216 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ trainer.full_name }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">{{ trainer.full_name }}</h1>
+        <p class="text-muted mb-0">Карточка тренера</p>
+    </div>
+
+    <div class="d-flex gap-2 flex-wrap">
+        <a href="{% url 'trainers:list' %}" class="btn btn-outline-secondary">
+            Назад
+        </a>
+
+        <a href="{% url 'trainers:clients' trainer.pk %}" class="btn btn-outline-success">
+            Клиенты тренера
+        </a>
+
+        {% if is_admin_user %}
+            <a href="{% url 'trainers:edit' trainer.pk %}" class="btn btn-primary">
+                Редактировать
+            </a>
+
+            <a href="{% url 'trainers:delete' trainer.pk %}" class="btn btn-outline-danger">
+                Удалить
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="row g-4">
+    <div class="col-lg-6">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Основная информация</h2>
+            </div>
+
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">ФИО</dt>
+                    <dd class="col-sm-7">{{ trainer.full_name }}</dd>
+
+                    <dt class="col-sm-5">Телефон</dt>
+                    <dd class="col-sm-7">{{ trainer.phone|default:"—" }}</dd>
+
+                    <dt class="col-sm-5">Email</dt>
+                    <dd class="col-sm-7">{{ trainer.email|default:"—" }}</dd>
+
+                    <dt class="col-sm-5">Специализация</dt>
+                    <dd class="col-sm-7">{{ trainer.specialization }}</dd>
+
+                    <dt class="col-sm-5">Стаж</dt>
+                    <dd class="col-sm-7">{{ trainer.experience_years }} лет</dd>
+
+                    <dt class="col-sm-5">Статус</dt>
+                    <dd class="col-sm-7">{{ trainer.get_status_display }}</dd>
+
+                    <dt class="col-sm-5">Пользователь</dt>
+                    <dd class="col-sm-7">
+                        {% if trainer.user %}
+                            {{ trainer.user.username }}
+                        {% else %}
+                            <span class="text-muted">Не связан</span>
+                        {% endif %}
+                    </dd>
+
+                    <dt class="col-sm-5">Комментарий</dt>
+                    <dd class="col-sm-7">
+                        {% if trainer.note %}
+                            {{ trainer.note|linebreaksbr }}
+                        {% else %}
+                            <span class="text-muted">—</span>
+                        {% endif %}
+                    </dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm mb-4">
+            <div class="card-header bg-white d-flex justify-content-between align-items-center">
+                <h2 class="h5 mb-0">Закрепленные клиенты</h2>
+
+                <a href="{% url 'trainers:clients_add' trainer.pk %}" class="btn btn-sm btn-primary">
+                    Добавить клиента
+                </a>
+            </div>
+
+            <div class="card-body">
+                {% if assigned_clients %}
+                    <div class="table-responsive">
+                        <table class="table table-sm align-middle mb-0">
+                            <thead>
+                                <tr>
+                                    <th>Клиент</th>
+                                    <th>Телефон</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for assignment in assigned_clients %}
+                                    <tr>
+                                        <td>{{ assignment.client.full_name }}</td>
+                                        <td>{{ assignment.client.phone }}</td>
+                                        <td class="text-end">
+                                            <a href="{% url 'clients:detail' assignment.client.pk %}" class="btn btn-sm btn-outline-primary">
+                                                Открыть
+                                            </a>
+                                        </td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">Клиенты пока не закреплены.</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Системная информация</h2>
+            </div>
+
+            <div class="card-body">
+                <p class="mb-1">
+                    <strong>Создан:</strong> {{ trainer.created_at|date:'d.m.Y H:i' }}
+                </p>
+                <p class="mb-0">
+                    <strong>Обновлен:</strong> {{ trainer.updated_at|date:'d.m.Y H:i' }}
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mt-1">
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Ближайшие запланированные занятия</h2>
+            </div>
+
+            <div class="card-body">
+                {% if planned_classes %}
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Время</th>
+                                <th>Занятие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fitness_class in planned_classes %}
+                                <tr>
+                                    <td>{{ fitness_class.class_date|date:'d.m.Y' }}</td>
+                                    <td>{{ fitness_class.start_time|time:'H:i' }}–{{ fitness_class.end_time|time:'H:i' }}</td>
+                                    <td>
+                                        <a href="/classes/{{ fitness_class.pk }}/">
+                                            {{ fitness_class.title }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted mb-0">Запланированных занятий нет.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+
+    <div class="col-lg-6">
+        <div class="card shadow-sm">
+            <div class="card-header bg-white">
+                <h2 class="h5 mb-0">Последние проведенные занятия</h2>
+            </div>
+
+            <div class="card-body">
+                {% if completed_classes %}
+                    <table class="table table-sm align-middle mb-0">
+                        <thead>
+                            <tr>
+                                <th>Дата</th>
+                                <th>Время</th>
+                                <th>Занятие</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for fitness_class in completed_classes %}
+                                <tr>
+                                    <td>{{ fitness_class.class_date|date:'d.m.Y' }}</td>
+                                    <td>{{ fitness_class.start_time|time:'H:i' }}–{{ fitness_class.end_time|time:'H:i' }}</td>
+                                    <td>
+                                        <a href="/classes/{{ fitness_class.pk }}/">
+                                            {{ fitness_class.title }}
+                                        </a>
+                                    </td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                {% else %}
+                    <p class="text-muted mb-0">Проведенных занятий нет.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

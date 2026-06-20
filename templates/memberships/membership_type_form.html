@@ -1,0 +1,104 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    {% if object %}Редактирование типа абонемента{% else %}Создание типа абонемента{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <div>
+        <h1 class="h3 mb-1">
+            {% if object %}Редактирование типа абонемента{% else %}Создание типа абонемента{% endif %}
+        </h1>
+        <p class="text-muted mb-0">Заполните данные абонемента</p>
+    </div>
+
+    <a href="{% url 'memberships:type_list' %}" class="btn btn-outline-secondary">
+        Отмена
+    </a>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        {% include 'includes/form_errors.html' %}
+
+        <form method="post" novalidate>
+            {% csrf_token %}
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="{{ form.name.id_for_label }}" class="form-label">
+                        Название <span class="text-danger">*</span>
+                    </label>
+                    {{ form.name }}
+                    {% for error in form.name.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-3">
+                    <label for="{{ form.duration_days.id_for_label }}" class="form-label">
+                        Длительность, дней <span class="text-danger">*</span>
+                    </label>
+                    {{ form.duration_days }}
+                    {% for error in form.duration_days.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-3">
+                    <label for="{{ form.visit_limit.id_for_label }}" class="form-label">
+                        Количество посещений <span class="text-danger">*</span>
+                    </label>
+                    {{ form.visit_limit }}
+                    {% for error in form.visit_limit.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-4">
+                    <label for="{{ form.price.id_for_label }}" class="form-label">
+                        Стоимость <span class="text-danger">*</span>
+                    </label>
+                    {{ form.price }}
+                    {% for error in form.price.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-md-8 d-flex align-items-end">
+                    <div class="form-check mb-2">
+                        {{ form.is_active }}
+                        <label for="{{ form.is_active.id_for_label }}" class="form-check-label">
+                            Активен
+                        </label>
+                    </div>
+                    {% for error in form.is_active.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+
+                <div class="col-12">
+                    <label for="{{ form.description.id_for_label }}" class="form-label">
+                        Описание
+                    </label>
+                    {{ form.description }}
+                    {% for error in form.description.errors %}
+                        <div class="text-danger small">{{ error }}</div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a href="{% url 'memberships:type_list' %}" class="btn btn-outline-secondary">
+                    Отмена
+                </a>
+
+                <button type="submit" class="btn btn-primary">
+                    Сохранить
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

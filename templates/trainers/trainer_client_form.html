@@ -1,0 +1,64 @@
+{% extends 'base.html' %}
+
+{% block title %}Добавить клиента тренеру{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Добавить клиента тренеру</h1>
+    <p class="text-muted mb-0">{{ trainer.full_name }}</p>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-body">
+        <form method="post">
+            {% csrf_token %}
+
+            {% if form.non_field_errors %}
+                <div class="alert alert-danger">
+                    {% for error in form.non_field_errors %}
+                        <div>{{ error }}</div>
+                    {% endfor %}
+                </div>
+            {% endif %}
+
+            <div class="mb-3">
+                <label for="{{ form.client.id_for_label }}" class="form-label">
+                    Клиент
+                </label>
+                {{ form.client }}
+
+                {% for error in form.client.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="mb-3">
+                <label for="{{ form.note.id_for_label }}" class="form-label">
+                    Комментарий
+                </label>
+                {{ form.note }}
+
+                {% for error in form.note.errors %}
+                    <div class="text-danger small">{{ error }}</div>
+                {% endfor %}
+            </div>
+
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">
+                    Добавить
+                </button>
+
+                {% if request.resolver_match.url_name == 'my_clients_add' %}
+                    <a href="{% url 'trainers:my_clients' %}" class="btn btn-outline-secondary">
+                        Отмена
+                    </a>
+                {% else %}
+                    <a href="{% url 'trainers:clients' trainer.pk %}" class="btn btn-outline-secondary">
+                        Отмена
+                    </a>
+                {% endif %}
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

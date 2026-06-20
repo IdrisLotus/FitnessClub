@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block title %}Отмена занятия{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-lg-7">
+        <div class="card shadow-sm border-danger">
+            <div class="card-header bg-danger text-white">
+                <h1 class="h4 mb-0">Отмена занятия</h1>
+            </div>
+
+            <div class="card-body">
+                <p>
+                    Вы действительно хотите отменить занятие
+                    <strong>{{ fitness_class.title }}</strong>?
+                </p>
+
+                <dl class="row">
+                    <dt class="col-sm-4">Тренер</dt>
+                    <dd class="col-sm-8">{{ fitness_class.trainer.full_name }}</dd>
+
+                    <dt class="col-sm-4">Дата</dt>
+                    <dd class="col-sm-8">{{ fitness_class.class_date|date:'d.m.Y' }}</dd>
+
+                    <dt class="col-sm-4">Время</dt>
+                    <dd class="col-sm-8">
+                        {{ fitness_class.start_time|time:'H:i' }} — {{ fitness_class.end_time|time:'H:i' }}
+                    </dd>
+
+                    <dt class="col-sm-4">Статус</dt>
+                    <dd class="col-sm-8">{{ fitness_class.get_status_display }}</dd>
+                </dl>
+
+                <div class="alert alert-warning">
+                    Занятие не будет удалено физически.
+                    Его статус изменится на <strong>«Отменено»</strong>.
+                </div>
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    <div class="d-flex justify-content-end gap-2">
+                        <a href="{% url 'schedule:detail' fitness_class.pk %}" class="btn btn-outline-secondary">
+                            Назад
+                        </a>
+
+                        <button type="submit" class="btn btn-danger">
+                            Отменить занятие
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

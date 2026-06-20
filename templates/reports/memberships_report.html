@@ -1,0 +1,94 @@
+{% extends 'base.html' %}
+
+{% block title %}Отчет по абонементам{% endblock %}
+
+{% block content %}
+<div class="mb-4">
+    <h1 class="h3 mb-1">Отчет по абонементам</h1>
+    <p class="text-muted mb-0">Статистика по абонементам клиентов</p>
+</div>
+
+<div class="row g-3 mb-4">
+    <div class="col-md-4 col-lg">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Активные</div>
+                <div class="fs-3 fw-semibold">{{ active_memberships }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-lg">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Истекшие</div>
+                <div class="fs-3 fw-semibold">{{ expired_memberships }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-lg">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Завершенные</div>
+                <div class="fs-3 fw-semibold">{{ completed_memberships }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-lg">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Замороженные</div>
+                <div class="fs-3 fw-semibold">{{ frozen_memberships }}</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-4 col-lg">
+        <div class="card shadow-sm">
+            <div class="card-body">
+                <div class="text-muted small">Отмененные</div>
+                <div class="fs-3 fw-semibold">{{ cancelled_memberships }}</div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card shadow-sm">
+    <div class="card-header bg-white">
+        <h2 class="h5 mb-0">Абонементы, которые скоро заканчиваются</h2>
+    </div>
+
+    <div class="card-body">
+        {% if expiring_memberships %}
+            <div class="table-responsive">
+                <table class="table table-striped align-middle">
+                    <thead>
+                        <tr>
+                            <th>Клиент</th>
+                            <th>Тип абонемента</th>
+                            <th>Дата начала</th>
+                            <th>Дата окончания</th>
+                            <th>Остаток посещений</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for membership in expiring_memberships %}
+                            <tr>
+                                <td>{{ membership.client.full_name }}</td>
+                                <td>{{ membership.membership_type.name }}</td>
+                                <td>{{ membership.start_date|date:"d.m.Y" }}</td>
+                                <td>{{ membership.end_date|date:"d.m.Y" }}</td>
+                                <td>{{ membership.remaining_visits }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <p class="text-muted mb-0">Нет абонементов, которые заканчиваются в ближайшие 7 дней.</p>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

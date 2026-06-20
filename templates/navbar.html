@@ -1,0 +1,109 @@
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <div class="container">
+        <a class="navbar-brand" href="/dashboard/">
+            Фитнес-клуб
+        </a>
+
+        <button
+            class="navbar-toggler"
+            type="button"
+            data-bs-toggle="collapse"
+            data-bs-target="#mainNavbar"
+            aria-controls="mainNavbar"
+            aria-expanded="false"
+            aria-label="Переключить навигацию"
+        >
+            <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="mainNavbar">
+            {% if user.is_authenticated %}
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="/dashboard/">
+                            Главная
+                        </a>
+                    </li>
+
+                    {% if user.is_superuser or user.profile.role == 'admin' or user.profile.role == 'manager' %}
+                        <li class="nav-item">
+                            <a class="nav-link" href="/clients/">
+                                Клиенты
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/membership-types/">
+                                Абонементы
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/visits/">
+                                Посещения
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/payments/">
+                                Оплаты
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/trainers/">
+                                Тренеры
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/classes/">
+                                Расписание
+                            </a>
+                        </li>
+
+                        <li class="nav-item">
+                            <a class="nav-link" href="/reports/">
+                                Отчеты
+                            </a>
+                        </li>
+                   {% elif user.profile.role == 'trainer' %}
+                        <li class="nav-item">
+                             <a class="nav-link" href="/classes/my/">
+                                 Мои занятия
+                             </a>
+                        </li>
+
+                        <li class="nav-item">
+                             <a class="nav-link" href="/trainers/my/clients/">
+                                  Мои клиенты
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+
+                <div class="d-flex align-items-center gap-3">
+                    <span class="navbar-text text-white">
+                        {{ user.username }}
+                    </span>
+
+                    <form method="post" action="/accounts/logout/">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-outline-light btn-sm">
+                            Выход
+                        </button>
+                    </form>
+                </div>
+            {% else %}
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/accounts/login/">
+                            Вход
+                        </a>
+                    </li>
+                </ul>
+            {% endif %}
+        </div>
+    </div>
+</nav>
