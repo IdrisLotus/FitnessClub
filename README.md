@@ -115,8 +115,8 @@
 
 ```bash
 # Клонировать репозиторий
-git clone https://github.com/USERNAME/fitness-club.git
-cd fitness-club
+git clone https://github.com/IdrisLotus/FitnessClub.git
+cd FitnessClub
 
 # Создать виртуальное окружение
 python -m venv .venv
@@ -153,7 +153,7 @@ http://127.0.0.1:8000/
 
 ```text
 fitness_club/
-├── accounts/              # авторизация, профили пользователей, роли и права доступа
+├── accounts/              # авторизация, профили пользователей роли и права доступа
 ├── clients/               # учет клиентов фитнес-клуба
 ├── trainers/              # учет тренеров
 ├── memberships/           # работа с абонементами
