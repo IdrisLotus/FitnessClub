@@ -4,13 +4,6 @@
 
   **Дипломный проект на Django для автоматизации учета клиентов, абонементов, посещений, оплат, тренеров и расписания занятий фитнес-клуба**
 
-  ![Python](https://img.shields.io/badge/Python-3.x-3776AB?logo=python&logoColor=white)
-  ![Django](https://img.shields.io/badge/Django-5.x-092E20?logo=django&logoColor=white)
-  ![SQLite](https://img.shields.io/badge/SQLite-3-003B57?logo=sqlite&logoColor=white)
-  ![Bootstrap](https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white)
-  ![Status](https://img.shields.io/badge/status-diploma_project-blue)
-
-</div>
 
 ---
 
